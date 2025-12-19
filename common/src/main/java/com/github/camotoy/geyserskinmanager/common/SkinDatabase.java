@@ -30,7 +30,7 @@ public class SkinDatabase {
     public SkinDatabase(Path baseFileLocation) {
         this.baseFileLocation = baseFileLocation.resolve("users").toFile();
         if (!this.baseFileLocation.exists()) {
-            //noinspection ResultOfMethodCallIgnored
+            // noinspection ResultOfMethodCallIgnored
             this.baseFileLocation.mkdir();
         }
     }
@@ -41,7 +41,7 @@ public class SkinDatabase {
 
         ObjectNode node = SkinUtils.OBJECT_MAPPER.createObjectNode();
         node.put("playerUuid", playerUuid);
-        ArrayNode jsonSkinEntries =  SkinUtils.OBJECT_MAPPER.createArrayNode();
+        ArrayNode jsonSkinEntries = SkinUtils.OBJECT_MAPPER.createArrayNode();
 
         while (entry.getSkinEntries().size() > 5) { // Make this number a config option in the future?
             // Remove old skin entries
@@ -57,7 +57,7 @@ public class SkinDatabase {
         }
 
         for (SkinEntry skinEntry : entry.getSkinEntries()) {
-            ObjectNode jsonSkinEntry =  SkinUtils.OBJECT_MAPPER.createObjectNode();
+            ObjectNode jsonSkinEntry = SkinUtils.OBJECT_MAPPER.createObjectNode();
             jsonSkinEntry.put("bedrockSkin", skinEntry.getBedrockBase64Skin());
             jsonSkinEntry.put("javaSkinValue", skinEntry.getJavaSkinValue());
             jsonSkinEntry.put("javaSkinSignature", skinEntry.getJavaSkinSignature());
@@ -89,7 +89,7 @@ public class SkinDatabase {
             return null;
         }
         try {
-            JsonNode node =  SkinUtils.OBJECT_MAPPER.readTree(playerFileLocation);
+            JsonNode node = SkinUtils.OBJECT_MAPPER.readTree(playerFileLocation);
             JsonNode jsonSkinEntries = node.get("skinEntries");
             List<SkinEntry> skinEntries = new ArrayList<>();
             for (JsonNode entry : jsonSkinEntries) {
@@ -98,7 +98,8 @@ public class SkinDatabase {
                 if (jsonDateAdded != null) {
                     dateAdded = jsonDateAdded.asLong();
                 } else {
-                    continue; // Pre-1.3-SNAPSHOT - Don't load these in as their geometry might not have been saved
+                    continue; // Pre-1.3-SNAPSHOT - Don't load these in as their geometry might not have been
+                              // saved
                 }
 
                 skinEntries.add(new SkinEntry(entry.get("bedrockSkin").asText(), entry.get("javaSkinValue").asText(),

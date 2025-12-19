@@ -7,6 +7,8 @@ import org.geysermc.geyser.GeyserImpl;
 import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.geyser.session.auth.BedrockClientData;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.UUID;
@@ -21,12 +23,13 @@ public class GeyserSkinRetriever implements BedrockSkinRetriever {
             return null;
         }
 
+        byte[] capeData = getBedrockData(session.getClientData(), "getCapeData");
         if (session.getClientData().getCapeImageWidth() == 0 || session.getClientData().getCapeImageHeight() == 0 ||
-                session.getClientData().getCapeData().length == 0) {
+                capeData == null || capeData.length == 0) {
             return null;
         }
         return new RawCape(session.getClientData().getCapeImageWidth(), session.getClientData().getCapeImageHeight(),
-                session.getClientData().getCapeId(), session.getClientData().getCapeData());
+                session.getClientData().getCapeId(), capeData);
     }
 
     @Override
@@ -61,23 +64,59 @@ public class GeyserSkinRetriever implements BedrockSkinRetriever {
     }
 
     /**
-     * Taken from https://github.com/NukkitX/Nukkit/blob/master/src/main/java/cn/nukkit/network/protocol/LoginPacket.java
+     * Taken from
+     * https://github.com/NukkitX/Nukkit/blob/master/src/main/java/cn/nukkit/network/protocol/LoginPacket.java
      */
     private RawSkin getImage(BedrockClientData clientData) {
-        byte[] image = Base64.getDecoder().decode(clientData.getSkinData());
-        if (image.length > (128 * 128 * 4) || clientData.isPersonaSkin()) {
-            //System.out.println("Persona skins are not yet supported, sorry!");
+        byte[] image = getBedrockData(clientData, "getSkinData");
+        if (image == null || image.length > (128 * 128 * 4) || clientData.isPersonaSkin()) {
+            // System.out.println("Persona skins are not yet supported, sorry!");
             return null;
         }
-        String geometryName = new String(Base64.getDecoder().decode(clientData.getGeometryName()), StandardCharsets.UTF_8);
+
+        byte[] geometryNameBytes = getBedrockData(clientData, "getGeometryName");
+        String geometryName = geometryNameBytes != null ? new String(geometryNameBytes, StandardCharsets.UTF_8) : "";
         boolean alex = isAlex(geometryName);
+
+        byte[] geometryDataBytes = getBedrockData(clientData, "getGeometryData");
+        String geometryData = geometryDataBytes != null ? new String(geometryDataBytes, StandardCharsets.UTF_8) : "";
+
         return new RawSkin(
                 clientData.getSkinImageWidth(),
                 clientData.getSkinImageHeight(),
                 image, alex, geometryName,
-                new String(Base64.getDecoder().decode(clientData.getGeometryData()), StandardCharsets.UTF_8),
-                clientData.getSkinData()
-        );
+                geometryData,
+                getBedrockDataString(clientData, "getSkinData"));
+    }
+
+    private byte[] getBedrockData(BedrockClientData clientData, String methodName) {
+        try {
+            Method method = clientData.getClass().getMethod(methodName);
+            Object result = method.invoke(clientData);
+            if (result instanceof String) {
+                return Base64.getDecoder().decode((String) result);
+            } else if (result instanceof byte[]) {
+                return (byte[]) result;
+            }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String getBedrockDataString(BedrockClientData clientData, String methodName) {
+        try {
+            Method method = clientData.getClass().getMethod(methodName);
+            Object result = method.invoke(clientData);
+            if (result instanceof String) {
+                return (String) result;
+            } else if (result instanceof byte[]) {
+                return Base64.getEncoder().encodeToString((byte[]) result);
+            }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private boolean isAlex(String geometryName) {

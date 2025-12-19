@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 
 public class HttpUtils {
@@ -20,7 +21,7 @@ public class HttpUtils {
         HttpURLConnection connection;
 
         try {
-            URL url = new URL(urlString);
+            URL url = URI.create(urlString).toURL();
             connection = (HttpURLConnection) url.openConnection();
         } catch (Exception exception) {
             throw new RuntimeException("Failed to create connection", exception);
@@ -42,13 +43,11 @@ public class HttpUtils {
         HttpURLConnection connection;
 
         try {
-            URL url = new URL(urlString);
+            URL url = URI.create(urlString).toURL();
             connection = (HttpURLConnection) url.openConnection();
         } catch (Exception exception) {
             throw new RuntimeException("Failed to create connection", exception);
         }
-
-        DataOutputStream outputStream = null;
 
         try {
             connection.setRequestMethod("POST");
@@ -57,50 +56,32 @@ public class HttpUtils {
             connection.setRequestProperty("User-Agent", USER_AGENT);
             connection.setRequestProperty(
                     "Content-Type",
-                    "multipart/form-data;boundary=" + BOUNDARY
-            );
+                    "multipart/form-data;boundary=" + BOUNDARY);
 
-            outputStream = new DataOutputStream(connection.getOutputStream());
-            writeDataFor(outputStream, images);
+            try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
+                writeDataFor(outputStream, images);
+            }
         } catch (Exception exception) {
             throw new RuntimeException("Failed to create request", exception);
-        } finally {
-            try {
-                outputStream.close();
-            } catch (Exception ignored) {
-            }
         }
 
         return readResponse(connection);
     }
 
     private static HttpResponse readResponse(HttpURLConnection connection) {
-        InputStream stream = null;
-        try {
-            stream = connection.getInputStream();
-        } catch (Exception exception) {
-            try {
-                stream = connection.getErrorStream();
-            } catch (Exception exception1) {
-                throw new RuntimeException("Both the input and the error stream failed?!");
-            }
-        }
-
-        InputStreamReader streamReader = new InputStreamReader(stream);
-
         try {
             int responseCode = connection.getResponseCode();
+            try (InputStream stream = (responseCode >= 200 && responseCode < 400)
+                    ? connection.getInputStream()
+                    : connection.getErrorStream();
+                    InputStreamReader streamReader = new InputStreamReader(stream)) {
 
-            JsonObject response = GSON.fromJson(streamReader, JsonObject.class);
+                JsonObject response = GSON.fromJson(streamReader, JsonObject.class);
 
-            return new HttpResponse(responseCode, response);
+                return new HttpResponse(responseCode, response);
+            }
         } catch (Exception exception) {
             throw new RuntimeException("Failed to read response", exception);
-        } finally {
-            try {
-                streamReader.close();
-            } catch (Exception ignored) {
-            }
         }
     }
 
@@ -147,4 +128,3 @@ public class HttpUtils {
         }
     }
 }
-
