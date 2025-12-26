@@ -17,4 +17,16 @@ How to set up BungeeCord/Velocity:
 - Install GeyserSkinManager-Spigot on all Spigot servers you wish to have the skin applied to. It is not required that the plugin be installed to all servers. Geyser-Spigot should not be installed.
 - Done.
 
+### Build
+
+1. `mvn clean package` outputs:
+    - `bungeecord/target/GeyserSkinManager-BungeeCord.jar`
+    - `velocity/target/GeyserSkinManager-Velocity.jar`
+    - `spigot/target/GeyserSkinManager-Spigot.jar`
+
+2. `./gradlew clean build` outputs:
+    - `fabric/build/libs/GeyserSkinManager-Fabric-*.jar`
+
+### Links
+
 Camotoy's Discord server: https://discord.gg/jNNC4CZtsN

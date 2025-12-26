@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "geyserskinmanager-fabric",
+  "version": "${version}",
+  "name": "GeyserSkinManager-Fabric",
+  "description": "A mod that automatically applies skins to Geyser players.",
+  "authors": [
+    "Camotoy"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Camotoy/GeyserSkinManager",
+    "sources": "https://github.com/Camotoy/GeyserSkinManager"
+  },
+  "license": "MIT",
+  "icon": "assets/geyserskinmanager-fabric/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "com.github.camotoy.geyserskinmanager.fabric.GeyserSkinManager"
+    ]
+  },
+  "mixins": [],
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": ">=1.21.2",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {}
+}

@@ -1,0 +1,13 @@
+pluginManagement {
+    repositories {
+        maven { url = "https://maven.fabricmc.net/" }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+include 'common'
+include 'fabric'
+
+project(':common').projectDir = file('common')
+project(':fabric').projectDir = file('fabric')

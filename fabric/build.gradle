@@ -1,0 +1,62 @@
+plugins {
+    id 'fabric-loom' version "${loom_version}"
+    id 'java'
+}
+
+version = project.common_version
+group = 'com.github.camotoy.geyserskinmanager'
+
+base {
+    archivesName = 'GeyserSkinManager-Fabric'
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.opencollab.dev/maven-snapshots/' }
+    maven { url 'https://repo.opencollab.dev/main/' }
+    maven { url 'https://maven.fabricmc.net/' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    implementation project(':common')
+    // We need to include common in the jar
+    include project(':common')
+
+    include "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.16.0"
+    include "com.fasterxml.jackson.core:jackson-databind:2.16.0"
+    include "com.fasterxml.jackson.core:jackson-annotations:2.16.0"
+    include "com.fasterxml.jackson.core:jackson-core:2.16.0"
+
+    compileOnly "org.geysermc.geyser:api:${project.geyser_version}"
+    compileOnly "org.geysermc.floodgate:api:${project.floodgate_version}"
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+    it.options.release = 21
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+}

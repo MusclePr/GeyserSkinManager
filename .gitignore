@@ -1,6 +1,7 @@
 # User-specific stuff
 .idea/
-.vscode
+.vscode/
+.gradle/
 
 *.iml
 *.ipr
@@ -112,3 +113,7 @@ buildNumber.properties
 
 # Common working directory
 run/
+build/
+common/build/
+fabric/build/
+!gradle/wrapper/gradle-wrapper.jar
