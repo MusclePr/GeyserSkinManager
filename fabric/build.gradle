@@ -28,6 +28,7 @@ dependencies {
     include project(':common')
 
     include "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.16.0"
+    include "org.yaml:snakeyaml:2.2"
     include "com.fasterxml.jackson.core:jackson-databind:2.16.0"
     include "com.fasterxml.jackson.core:jackson-annotations:2.16.0"
     include "com.fasterxml.jackson.core:jackson-core:2.16.0"
