@@ -3,11 +3,11 @@ package com.github.camotoy.geyserskinmanager.fabric;
 import com.github.camotoy.geyserskinmanager.common.SkinEntry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.nio.file.Path;
 
-public class FabricSkinEventListener extends com.github.camotoy.geyserskinmanager.common.platform.SkinEventListener<ServerPlayerEntity, MinecraftServer> {
+public class FabricSkinEventListener extends com.github.camotoy.geyserskinmanager.common.platform.SkinEventListener<ServerPlayer, MinecraftServer> {
     private final FabricSkinApplier skinApplier;
 
     private final FabricBedrockSkinUtilityListener modListener;
@@ -27,30 +27,30 @@ public class FabricSkinEventListener extends com.github.camotoy.geyserskinmanage
         });
     }
 
-    public void onPlayerJoin(ServerPlayerEntity player, net.minecraft.server.MinecraftServer server) {
-        com.github.camotoy.geyserskinmanager.common.RawSkin skin = skinRetriever.getBedrockSkin(player.getUuid());
+    public void onPlayerJoin(ServerPlayer player, net.minecraft.server.MinecraftServer server) {
+        com.github.camotoy.geyserskinmanager.common.RawSkin skin = skinRetriever.getBedrockSkin(player.getUUID());
         if (skin != null && this.skinApplier != null) {
             com.mojang.authlib.GameProfile gameProfile = player.getGameProfile();
             // In 1.21.2+, we can check if textures are already present via properties
-            if (gameProfile.getProperties().get("textures").isEmpty()) {
+            if (gameProfile.properties().get("textures").isEmpty()) {
                 uploadOrRetrieveSkin(player, server, skin);
             }
         }
 
-        if (skin != null || skinRetriever.isBedrockPlayer(player.getUuid())) {
+        if (skin != null || skinRetriever.isBedrockPlayer(player.getUUID())) {
             modListener.onBedrockPlayerJoin(player, skin);
         }
     }
 
     @Override
-    public void onSuccess(ServerPlayerEntity player, net.minecraft.server.MinecraftServer server, SkinEntry skinEntry) {
+    public void onSuccess(ServerPlayer player, net.minecraft.server.MinecraftServer server, SkinEntry skinEntry) {
         if (skinApplier != null) {
             skinApplier.setSkin(player, skinEntry);
         }
     }
 
     @Override
-    public java.util.UUID getUUID(ServerPlayerEntity player) {
-        return player.getUuid();
+    public java.util.UUID getUUID(ServerPlayer player) {
+        return player.getUUID();
     }
 }
