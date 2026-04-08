@@ -31,7 +31,6 @@ public class VelocitySkinEventListener extends SkinEventListener<Player, ServerC
         server.getChannelRegistrar().register(VelocityConstants.MOD_PLUGIN_MESSAGE_NAME);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     @Subscribe
     public void onServerConnected(ServerPostConnectEvent event) {
         if (event.getPreviousServer() == null) {

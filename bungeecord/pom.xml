@@ -7,7 +7,7 @@
     <parent>
         <artifactId>GeyserSkinManager</artifactId>
         <groupId>com.github.camotoy.geyserskinmanager</groupId>
-        <version>1.9-SNAPSHOT</version>
+        <version>1.10-SNAPSHOT</version>
     </parent>
     <artifactId>bungeecord</artifactId>
     <packaging>jar</packaging>

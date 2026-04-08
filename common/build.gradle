@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-version = '1.9-SNAPSHOT'
+version = '1.10-SNAPSHOT'
 group = 'com.github.camotoy.geyserskinmanager'
 
 repositories {
@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.geysermc.geyser:core:2.9.0-SNAPSHOT'
+    compileOnly "org.geysermc.geyser:core:${project.geyser_version}"
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.16.0'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.16.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.0'

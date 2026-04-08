@@ -49,7 +49,6 @@ public class VelocityBedrockSkinUtilityListener extends BedrockSkinUtilityListen
         });
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     @Subscribe
     public void onServerConnected(ServerPostConnectEvent event) {
         if (event.getPreviousServer() != null) {
