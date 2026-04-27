@@ -4,12 +4,10 @@ import com.github.camotoy.geyserskinmanager.common.Constants;
 import com.github.camotoy.geyserskinmanager.common.SkinEntry;
 import com.github.camotoy.geyserskinmanager.spigot.GeyserSkinManager;
 import com.github.camotoy.geyserskinmanager.spigot.SpigotSkinApplier;
-import com.github.camotoy.geyserskinmanager.spigot.profile.GameProfileWrapper;
+import com.github.camotoy.geyserskinmanager.spigot.factory.ProfileWrapperFactory;
 import com.github.camotoy.geyserskinmanager.spigot.profile.MinecraftProfileWrapper;
-import com.github.camotoy.geyserskinmanager.spigot.profile.PaperProfileWrapper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,8 +39,7 @@ public class BungeecordPluginMessageListener implements Listener, PluginMessageL
     public BungeecordPluginMessageListener(GeyserSkinManager plugin) {
         this.plugin = plugin;
         this.skinApplier = new SpigotSkinApplier(plugin);
-        this.getProfileFunction = (PaperLib.isPaper() && PaperLib.isVersion(12, 2)) ?
-                 PaperProfileWrapper::from : GameProfileWrapper::from;
+        this.getProfileFunction = ProfileWrapperFactory::from;
 
         Bukkit.getPluginManager().registerEvents(this, this.plugin);
     }
